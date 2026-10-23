@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jokenpô IA — SENAI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header><span class="brand">JOKENPÔ <b>IA</b> <em>ARENA 2.0</em></span><span id="cameraStatus" class="status">Câmera desligada</span></header>
+    <div class="topActions"><label class="cameraSelectLabel" for="cameraSelect">📷 CÂMERA <select id="cameraSelect" disabled><option value="">Ative a câmera primeiro</option></select></label><button id="refreshCameras" class="utility" title="Atualizar lista de câmeras">↻ ATUALIZAR</button><button id="soundButton" class="utility" aria-pressed="true">🔊 SOM LIGADO</button><button id="fullButton" class="utility">⛶ TELA CHEIA</button></div>
+    <section class="scoreboard">
+      <div><small>ESTUDANTE</small><strong id="humanScore">0</strong></div>
+      <div class="middle"><span id="roundLabel">RODADA 1 / 5</span><h1 id="headline">PRONTO PARA JOGAR?</h1><p id="instruction">Ative a câmera para começar.</p></div>
+      <div class="jarvisCompetitor"><img class="jarvisOrb" src="jarvis-holograma.png" alt="" aria-hidden="true"><div><small>JARVIS</small><strong id="cpuScore">0</strong></div></div>
+    </section>
+    <section class="arena">
+      <div class="cameraPanel">
+        <div class="panelTitle">SUA CÂMERA <span id="gestureLabel">Aguardando...</span></div>
+        <div class="videoWrap"><video id="video" autoplay muted playsinline></video><canvas id="overlay"></canvas></div>
+      </div>
+      <div class="versus">VS</div>
+      <div class="cpuPanel"><div class="panelTitle">JARVIS</div><div id="cpuHand" class="hand">❔</div><div id="cpuChoice">Escolha oculta</div></div>
+    </section>
+    <section class="bottom">
+      <div id="progressText">Mostre a mão aberta ✋ por 3 segundos para iniciar.</div>
+      <div class="progressTrack"><div id="progressFill"></div></div>
+      <button id="cameraButton">ATIVAR CÂMERA</button>
+      <div id="roundDots" class="roundDots" aria-label="Cinco rodadas">● ● ● ● ●</div><p id="notice">Dica: posicione uma mão inteira dentro do enquadramento.</p>
+    </section>
+  </main><div id="celebration" class="celebration" aria-hidden="true"><div class="celebrationBox"><div id="celebrationIcon" class="celebrationIcon">🏆</div><h2 id="celebrationTitle">CAMPEÃO!</h2><div id="celebrationScore" class="winnerScore" aria-label="Placar final"><div class="winnerPlayer"><span>ESTUDANTE</span><strong id="finalHumanScore">0</strong></div><div class="winnerSeparator">×</div><div class="winnerPlayer"><strong id="finalJarvisScore">0</strong><span>JARVIS</span></div></div><div class="restartGesture" aria-label="Mostre a mão aberta por três segundos para jogar novamente"><span class="restartGestureIcon" aria-hidden="true">✋</span><div><strong>MOSTRE A MÃO ABERTA PARA JOGAR NOVAMENTE</strong><span>Mantenha a palma aberta por 3 segundos</span></div></div><p class="hint">Sem novo gesto, voltaremos à tela inicial em <strong id="returnSeconds">30</strong> segundos</p></div></div>
+  <section id="attractScreen" class="attractScreen visible posterScreen" aria-hidden="false" aria-label="Tela inicial Jokenpô IA — SENAI">
+    <div class="posterActions">
+      <button id="configureCameraButton" type="button" aria-label="Configurar câmera">CONFIGURAR CÂMERA</button>
+    </div>
+    <button id="musicButton" class="musicButton" type="button" aria-pressed="false">♫ ATIVAR MÚSICA</button>
+    <div id="musicStatus" class="musicStatus" role="status" aria-live="polite"></div>
+    <div id="cameraSetupPanel" class="cameraSetupPanel posterCameraSetup" hidden>
+      <label for="setupCameraSelect">Escolha a câmera:</label>
+      <select id="setupCameraSelect"><option value="">Câmera padrão</option></select>
+      <div class="cameraSetupActions">
+        <button id="setupActivateButton" type="button">📷 ATIVAR / TESTAR CÂMERA</button>
+        <button id="setupCloseButton" type="button">FECHAR</button>
+      </div>
+      <p id="setupStatus" role="status">Conecte a câmera e autorize o acesso quando solicitado.</p>
+    </div>
+    <div id="attractPrompt" class="srOnly">Mostre a mão aberta por 3 segundos para jogar.</div>
+    <div id="attractInstruction" class="srOnly" hidden>Mantenha a mão aberta por 3 segundos.</div>
+    <div id="attractFill" class="srOnly"></div>
+    <audio id="openingMusic" src="musica-abertura.mp3" preload="none" loop></audio>
+    <audio id="gameMusic" src="back-in-black.mp3" preload="none" loop></audio>
+  </section>
+  <script type="module" src="script.js"></script>
+</body>
+</html>

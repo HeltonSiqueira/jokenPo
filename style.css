@@ -1,0 +1,512 @@
+*{box-sizing:border-box}body{margin:0;background:#091523;color:#f5fbff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}.app{max-width:1600px;margin:auto;padding:2.5vh 3vw;min-height:100vh;display:flex;flex-direction:column;gap:2.5vh}header{display:flex;justify-content:space-between;align-items:center}.brand{font-size:clamp(24px,3vw,46px);font-weight:900;letter-spacing:.05em}.brand b{color:#42dfbb}.status{font-size:clamp(14px,1.5vw,22px);background:#203347;padding:.6em 1em;border-radius:99px}.scoreboard{display:grid;grid-template-columns:1fr 2.6fr 1fr;text-align:center;align-items:center;gap:12px}.scoreboard strong{display:block;font-size:clamp(60px,8vw,130px);color:#42dfbb;line-height:1}.scoreboard small{font-size:clamp(15px,1.6vw,25px);font-weight:800}.middle span{color:#8fb3d2;font-size:clamp(14px,1.4vw,24px)}h1{font-size:clamp(25px,3.3vw,56px);margin:.2em 0}.middle p{font-size:clamp(16px,1.7vw,29px);margin:0;color:#d2e5f3}.arena{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:1.5vw;flex:1;min-height:0}.cameraPanel,.cpuPanel{background:#14273a;border:2px solid #34506a;border-radius:22px;overflow:hidden;min-height:240px}.panelTitle{padding:14px 20px;font-weight:800;display:flex;justify-content:space-between;gap:12px;font-size:clamp(14px,1.5vw,23px)}#gestureLabel{color:#42dfbb}.videoWrap{position:relative;aspect-ratio:4/3;max-height:49vh;background:#06111e;overflow:hidden}video,canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:scaleX(-1)}canvas{pointer-events:none}.versus{display:flex;align-items:center;font-size:clamp(23px,3vw,50px);font-weight:900;color:#a6bed1}.cpuPanel{display:flex;flex-direction:column;align-items:center;justify-content:space-between}.cpuPanel .panelTitle{align-self:stretch}.hand{font-size:clamp(100px,15vw,250px);line-height:1}#cpuChoice{font-size:clamp(20px,2.5vw,40px);font-weight:800;padding-bottom:1em}.bottom{text-align:center}#progressText{font-size:clamp(18px,2vw,34px);font-weight:750}.progressTrack{height:16px;background:#284157;border-radius:99px;margin:12px auto;max-width:800px;overflow:hidden}#progressFill{height:100%;width:0;background:#42dfbb;transition:width .12s linear}button{background:#42dfbb;color:#071622;font-size:clamp(18px,1.8vw,28px);font-weight:900;border:0;border-radius:12px;padding:.6em 1.8em;cursor:pointer}button:disabled{opacity:.55;cursor:default}#notice{color:#a7c1d5;font-size:clamp(14px,1.2vw,20px);margin:.5em 0}@media(max-width:750px){.arena{grid-template-columns:1fr 1fr}.versus{display:none}.panelTitle{padding:10px}.hand{font-size:80px}.app{gap:16px}.scoreboard{grid-template-columns:1fr 2fr 1fr}.cameraPanel,.cpuPanel{min-height:170px}}
+
+/* ARENA 2.0 — visual para TV */
+body{background:radial-gradient(ellipse at 50% -30%,#173c60 0%,#091523 65%);overflow-x:hidden}
+.app{position:relative;z-index:1}
+.brand em{font-style:normal;font-size:.34em;color:#c6e5f3;letter-spacing:.18em;vertical-align:middle;margin-left:.6em}
+.topActions{display:flex;justify-content:flex-end;gap:12px}
+button.utility{background:#1d3449;color:#e9f8ff;border:1px solid #436580;font-size:clamp(13px,1.1vw,19px);padding:.5em .9em}
+button.utility:focus-visible,#cameraButton:focus-visible{outline:3px solid #42dfbb;outline-offset:3px}
+.scoreboard{background:linear-gradient(120deg,#10273c,#173752,#10273c);border:1px solid #2e5775;border-radius:20px;padding:1.2vh 1vw}
+.scoreboard strong{text-shadow:0 0 25px #42dfbb50}
+.cameraPanel,.cpuPanel{box-shadow:0 15px 40px #0005}
+.cpuPanel{background:radial-gradient(circle at center,#1c4662,#10283c)}
+.hand{filter:drop-shadow(0 0 20px #42dfbb55);transition:transform .2s}
+.hand.reveal{animation:handPop .65s ease}
+@keyframes handPop{0%{transform:scale(.4) rotate(-20deg);opacity:.1}60%{transform:scale(1.25) rotate(6deg)}100%{transform:scale(1);opacity:1}}
+#headline{transition:transform .12s;color:#fff}
+#headline.countdown{font-size:clamp(60px,9vw,155px);color:#42dfbb;text-shadow:0 0 40px #42dfbb70}
+#headline.flash{animation:flash .5s ease}
+@keyframes flash{0%{transform:scale(1.22);color:#42dfbb}100%{transform:scale(1)}}
+.roundDots{letter-spacing:12px;color:#42dfbb;font-size:clamp(18px,2vw,30px);margin-top:10px}
+.celebration{position:fixed;inset:0;z-index:9;background:#06111deb;display:none;align-items:center;justify-content:center;text-align:center;padding:24px}
+.celebration.visible{display:flex;animation:fadeIn .4s ease}
+.celebrationBox{border:2px solid #42dfbb;background:radial-gradient(circle at top,#24506a,#0d2032);border-radius:30px;padding:clamp(25px,5vw,75px);width:min(900px,95vw);box-shadow:0 0 110px #42dfbb25}
+.celebrationIcon{font-size:clamp(70px,11vw,155px);animation:float 2s ease-in-out infinite}
+.celebration h2{font-size:clamp(34px,5vw,82px);margin:.3em 0;color:#42dfbb}
+.celebration p{font-size:clamp(22px,2.5vw,42px)}
+.celebration .hint{font-size:clamp(15px,1.5vw,24px);color:#b4cfe0}
+@keyframes float{50%{transform:translateY(-13px)}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@media(max-width:750px){.brand em{display:none}.topActions{justify-content:center}.celebrationBox{padding:20px}}
+
+.cameraSelectLabel{display:flex;align-items:center;gap:9px;font-weight:750;font-size:clamp(13px,1.1vw,19px);background:#1d3449;border:1px solid #436580;border-radius:12px;padding:4px 10px}#cameraSelect{background:#0c2438;color:#fff;border:1px solid #60829b;border-radius:8px;font-size:inherit;padding:7px;max-width:250px}#cameraSelect:disabled{opacity:.6}.topActions{flex-wrap:wrap;align-items:center}#refreshCameras{white-space:nowrap}
+/* Tela de atração SENAI — wordmark tipográfico ilustrativo */
+.attractScreen{position:fixed;inset:0;z-index:10;background:#07192b;display:none;overflow:hidden;align-items:center;justify-content:center;text-align:center;padding:3vw}
+.attractScreen.visible{display:flex}
+.attractGlow{position:absolute;inset:-30%;background:radial-gradient(circle at 50% 50%,#0d608a88 0%,#0b274b 35%,transparent 65%);animation:glowPulse 5s ease-in-out infinite;pointer-events:none}
+.attractScreen::before,.attractScreen::after{content:"";position:absolute;width:65vw;height:65vw;border:2px solid #36bde833;border-radius:50%;animation:ring 9s linear infinite;pointer-events:none}
+.attractScreen::after{width:90vw;height:90vw;animation-duration:14s;animation-direction:reverse}
+.attractContent{position:relative;z-index:1;width:min(1200px,96vw);animation:enter .8s ease-out}
+.senaiWordmark{font-size:clamp(75px,13vw,190px);font-weight:1000;font-style:italic;letter-spacing:-.09em;line-height:1;color:white;text-shadow:0 0 50px #ffffff3d;position:relative;display:inline-block;padding-right:.1em}
+.senaiLine{display:block;background:#f34a4a;height:.075em;width:100%;margin-top:.12em;transform:skew(-16deg)}
+.attractEyebrow{font-size:clamp(11px,1.3vw,21px);font-weight:750;letter-spacing:.25em;color:#a5d6f1;margin:2.5vh 0}
+.attractContent h2{font-size:clamp(48px,7vw,110px);margin:1vh 0;color:#fff;letter-spacing:.05em}
+.attractContent h2 span{color:#42dfbb}
+.attractContent p{font-size:clamp(19px,2.6vw,40px);font-weight:800;letter-spacing:.13em;margin:0 0 1.5vh}
+.attractHands{display:flex;justify-content:center;gap:clamp(20px,5vw,80px);font-size:clamp(55px,8vw,130px);margin:1.5vh 0}
+.attractHands span{display:inline-block;animation:handBounce 2.5s ease-in-out infinite}
+.attractHands span:nth-child(2){animation-delay:.3s}.attractHands span:nth-child(3){animation-delay:.6s}
+.attractStart{font-size:clamp(17px,2.2vw,34px);font-weight:850;color:#42dfbb;margin:2vh 0 1vh;animation:glowText 2s ease-in-out infinite}
+.attractBar{height:12px;background:#29475d;border-radius:20px;overflow:hidden;width:min(650px,80vw);margin:0 auto 2vh}
+#attractFill{height:100%;background:#42dfbb;width:0;transition:width .1s linear}
+.attractContent small{color:#a9c6d8;font-size:clamp(12px,1.25vw,20px);letter-spacing:.12em}
+@keyframes glowPulse{50%{opacity:.45;transform:scale(1.2)}}@keyframes ring{to{transform:rotate(360deg) scale(1.08)}}@keyframes enter{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}@keyframes handBounce{50%{transform:translateY(-18px) rotate(6deg)}}@keyframes glowText{50%{opacity:.55}}
+@media(prefers-reduced-motion:reduce){.attractScreen *, .attractScreen::before,.attractScreen::after{animation:none!important}}
+
+
+/* Tela inicial e configuração da câmera */
+.attractButtons{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:20px auto}
+.attractButtons button,.cameraSetupActions button{background:#40dfbc;color:#092133;font-weight:900;font-size:clamp(15px,1.4vw,23px);padding:13px 20px;border-radius:12px}
+.attractButtons button:first-child{background:#e7f1fb}
+.cameraSetupPanel{max-width:650px;margin:10px auto;padding:20px;background:#0d253ceF;border:1px solid #62a5c7;border-radius:16px;position:relative;z-index:2}
+.cameraSetupPanel[hidden]{display:none}
+.cameraSetupPanel label{display:block;margin-bottom:10px;font-size:clamp(16px,1.5vw,24px)}
+.cameraSetupPanel select{width:100%;padding:12px;font-size:18px;background:#f8fcff;color:#102233;border-radius:8px}
+.cameraSetupActions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px}
+.cameraSetupActions button{font-size:16px}
+.cameraSetupPanel p{font-size:16px;color:#d8edf8}
+.attractScreen{overflow:auto}
+.attractContent{padding:20px 12px}
+
+/* Convite para nova partida quando a câmera já está configurada */
+.gestureStartNotice{display:flex;align-items:center;justify-content:center;gap:20px;max-width:760px;margin:16px auto;padding:18px 25px;border:2px solid #42dfbb;border-radius:20px;background:#123a48ee;box-shadow:0 0 35px #42dfbb33;color:#fff;text-align:left}
+.gestureStartNotice[hidden]{display:none}
+.gestureStartIcon{font-size:clamp(55px,7vw,95px);animation:gesturePulse 1.7s ease-in-out infinite}
+.gestureStartNotice strong{display:block;font-size:clamp(23px,3vw,43px);color:#42dfbb;line-height:1.15}
+.gestureStartNotice span:not(.gestureStartIcon){display:block;font-size:clamp(15px,1.5vw,23px);margin-top:8px}
+@keyframes gesturePulse{50%{transform:scale(1.13)}}
+@media(max-width:600px){.gestureStartNotice{gap:12px;padding:12px;text-align:center;flex-direction:column}}
+
+/* Abertura clássica: destaque no SENAI, gestos e chamada para jogar */
+.attractScreen{background:#07192b}
+.attractContent{width:min(1100px,96vw)}
+.attractStart{font-size:clamp(24px,3.1vw,49px);letter-spacing:.015em;text-shadow:0 0 24px #42dfbb66}
+.attractInstruction{color:#a5d6f1;font-size:clamp(14px,1.4vw,23px);font-weight:700;letter-spacing:.1em;margin:0 auto 1vh}
+.attractInstruction[hidden],.attractButtons button[hidden]{display:none!important}
+.attractButtons{margin:12px auto}
+.attractButtons button{font-size:clamp(13px,1.05vw,17px);padding:9px 16px}
+.attractButtons button:only-child{background:#1a4057;color:#d4e8f4;border:1px solid #5786a3}
+.attractHands{margin:1.3vh 0}
+.attractContent p{margin-bottom:1vh}
+
+
+/* Ajuste TV/notebook: uma arena inteira dentro da janela, sem rolagem */
+html,body{width:100%;height:100%;overflow:hidden}
+body{min-height:0}
+.app{height:100vh;height:100dvh;min-height:0;max-height:100dvh;overflow:hidden;max-width:100%;padding:clamp(6px,1.2vh,14px) clamp(8px,2vw,28px);gap:clamp(4px,1vh,12px)}
+.app>header,.topActions,.scoreboard,.bottom{flex-shrink:0;min-height:0}
+.app>header{min-height:0}
+.brand{font-size:clamp(18px,2.1vw,32px)}
+.status{font-size:clamp(11px,1vw,16px);padding:.35em .7em}
+.topActions{gap:6px}
+button.utility,.cameraSelectLabel{font-size:clamp(11px,1vw,15px);padding:5px 9px}
+#cameraSelect{max-width:min(24vw,210px);padding:4px}
+.scoreboard{padding:clamp(4px,.8vh,9px) 10px;border-radius:12px}
+.scoreboard strong{font-size:clamp(30px,5vh,65px)}
+.scoreboard small,.middle span{font-size:clamp(11px,1.4vh,17px)}
+h1{font-size:clamp(22px,3.8vh,44px);margin:0}
+#headline.countdown{font-size:clamp(45px,9vh,90px);line-height:1}
+.middle p{font-size:clamp(13px,2.3vh,22px)}
+.arena{flex:1 1 0;min-height:0;overflow:hidden;gap:clamp(6px,1.2vw,18px)}
+.cameraPanel,.cpuPanel{height:100%;min-height:0;border-radius:14px;display:flex;flex-direction:column}
+.panelTitle{flex:0 0 auto;padding:clamp(5px,.9vh,10px) 12px;font-size:clamp(12px,1.8vh,19px)}
+.videoWrap{flex:1 1 0;min-height:0;max-height:none;aspect-ratio:auto;width:100%;height:auto}
+.hand{font-size:clamp(55px,18vh,175px)}
+#cpuChoice{font-size:clamp(13px,2.4vh,24px);padding:0 6px 1vh;text-align:center}
+.versus{font-size:clamp(20px,4vh,36px)}
+.bottom{display:flex;flex-direction:column;gap:clamp(3px,.6vh,7px)}
+#progressText{font-size:clamp(14px,2.5vh,24px)}
+.progressTrack{height:clamp(6px,1.2vh,12px);margin:0 auto;width:100%;max-width:850px}
+.roundDots{font-size:clamp(13px,2.5vh,22px);margin:0;line-height:1.2}
+#notice{font-size:clamp(11px,1.8vh,16px);margin:0}
+#cameraButton{font-size:clamp(12px,1.8vh,18px);padding:5px 14px;align-self:center}
+/* Atração: dimensionar pelo espaço vertical, e não só pela largura */
+.attractScreen{height:100vh;height:100dvh;overflow:hidden;padding:clamp(6px,1vh,16px) 2vw}
+.attractContent{width:min(1050px,98vw);height:100%;max-height:100%;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(3px,.9vh,11px);padding:0 6px;overflow:hidden}
+.senaiWordmark{font-size:clamp(35px,11vh,120px);line-height:.95;flex-shrink:0}
+.attractEyebrow{font-size:clamp(10px,1.65vh,17px);letter-spacing:.14em;margin:0}
+.attractContent h2{font-size:clamp(30px,7.4vh,78px);line-height:1.05;margin:0}
+.attractContent p{font-size:clamp(15px,3.3vh,30px);margin:0;line-height:1.2}
+.attractHands{font-size:clamp(40px,9vh,95px);margin:0;line-height:1.25;gap:clamp(14px,4vw,60px)}
+.attractStart{font-size:clamp(17px,3.2vh,33px);line-height:1.15;margin:0;max-width:96%}
+.attractInstruction{font-size:clamp(11px,1.8vh,18px);margin:0}
+.attractButtons{margin:0;gap:8px}
+.attractButtons button{font-size:clamp(11px,1.7vh,16px);padding:clamp(5px,.8vh,9px) 12px}
+.attractBar{height:clamp(5px,1vh,10px);margin:0;width:min(650px,75vw);flex-shrink:0}
+.attractContent small{font-size:clamp(10px,1.5vh,15px)}
+.gestureStartNotice{margin:0;padding:clamp(6px,1vh,12px) 15px;gap:10px;max-width:720px}
+.gestureStartIcon{font-size:clamp(30px,6vh,65px)}
+.gestureStartNotice strong{font-size:clamp(16px,2.8vh,27px)}
+.gestureStartNotice span:not(.gestureStartIcon){font-size:clamp(11px,1.8vh,16px);margin-top:2px}
+/* Painel de câmera: sobreposição dentro da atração, sem aumentar sua altura */
+.cameraSetupPanel:not([hidden]){position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(620px,94vw);max-height:90dvh;overflow:auto;z-index:12;box-shadow:0 0 0 100vmax #03121cdd,0 20px 70px #000a;margin:0;padding:clamp(12px,2vh,20px)}
+.celebration{overflow:hidden;padding:10px}
+.celebrationBox{max-height:94dvh;overflow:hidden;padding:clamp(12px,3vh,36px)}
+.celebrationIcon{font-size:clamp(40px,11vh,110px)}
+.celebration h2{font-size:clamp(24px,6vh,62px)}
+.celebration p{font-size:clamp(16px,3vh,30px)}
+.celebration .hint{font-size:clamp(12px,2vh,20px)}
+@media(max-height:700px){.app{gap:4px}.topActions{gap:4px}.scoreboard strong{font-size:30px}.panelTitle{padding:4px 8px}.attractContent{gap:3px}.attractHands{font-size:8vh}.senaiWordmark{font-size:9vh}.attractContent h2{font-size:6.5vh}.attractStart{font-size:2.8vh}.gestureStartNotice{padding:5px 9px}}
+@media(max-width:650px){.app{padding:5px;gap:4px}.topActions{justify-content:center}.cameraSelectLabel{max-width:100%}.arena{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px}.versus{display:none}.scoreboard{grid-template-columns:1fr 2fr 1fr;gap:3px}.scoreboard strong{font-size:clamp(24px,4vh,40px)}.panelTitle{font-size:11px;gap:2px;flex-wrap:wrap}.hand{font-size:clamp(40px,11vh,90px)}.attractEyebrow{letter-spacing:.03em}.attractContent h2{font-size:clamp(25px,6vh,55px)}.gestureStartNotice{flex-direction:row;text-align:left}.gestureStartNotice strong{font-size:16px}}
+
+/* Tela de atração em TV: usar a área livre para leitura a distância.
+   Regras restritas à abertura, sem modificar a Arena 2.0. */
+@media (min-width: 900px) and (min-height: 600px) {
+  .attractContent{width:min(1500px,96vw);gap:clamp(7px,1.5vh,18px)}
+  .senaiWordmark{font-size:clamp(76px,15vh,170px)}
+  .attractEyebrow{font-size:clamp(15px,2.45vh,28px);letter-spacing:.08em}
+  .attractContent h2{font-size:clamp(56px,11vh,128px)}
+  .attractContent p{font-size:clamp(25px,4.8vh,54px)}
+  .attractHands{font-size:clamp(60px,12vh,130px);gap:clamp(30px,5vw,95px)}
+  .attractStart{font-size:clamp(24px,4.5vh,49px);max-width:100%;letter-spacing:0}
+  .attractInstruction{font-size:clamp(18px,2.7vh,29px)}
+  .attractButtons{gap:14px}
+  .attractButtons button{font-size:clamp(16px,2.4vh,26px);padding:clamp(9px,1.3vh,15px) 22px}
+  .attractContent small{font-size:clamp(14px,2.15vh,24px);letter-spacing:.05em}
+  .attractBar{width:min(950px,84vw)}
+}
+@media (min-width:900px) and (max-height:740px){
+  .attractContent{gap:clamp(3px,.75vh,7px)}
+  .senaiWordmark{font-size:12vh}
+  .attractEyebrow{font-size:2vh}
+  .attractContent h2{font-size:9vh}
+  .attractContent p{font-size:4vh}
+  .attractHands{font-size:10vh}
+  .attractStart{font-size:3.6vh}
+  .attractInstruction{font-size:2.3vh}
+  .attractButtons button{font-size:2vh;padding:7px 16px}
+  .attractContent small{font-size:1.7vh}
+}
+
+/* Vitrine SENAI: ocupa quase toda a altura útil, sem alterar a arena. */
+@media (min-width: 800px) and (orientation: landscape) {
+ .attractScreen{padding:1.5dvh 2vw}
+ .attractContent{width:min(1450px,96vw);height:96%;justify-content:space-evenly;gap:0;padding:0 1vw;overflow:hidden}
+ .senaiWordmark{font-size:clamp(62px,15dvh,180px);line-height:.95}
+ .attractEyebrow{font-size:clamp(12px,2.1dvh,26px);line-height:1.1}
+ .attractContent h2{font-size:clamp(45px,10.5dvh,120px);line-height:1}
+ .attractContent p{font-size:clamp(21px,4.4dvh,50px);line-height:1.08}
+ .attractHands{font-size:clamp(56px,11dvh,125px);line-height:1.08;gap:clamp(26px,5vw,90px)}
+ .attractStart{font-size:clamp(22px,4dvh,47px);line-height:1.08;max-width:96%}
+ .attractInstruction{font-size:clamp(16px,2.4dvh,28px);line-height:1.1}
+ .attractButtons{margin:0;gap:12px}
+ .attractButtons button{font-size:clamp(15px,2.3dvh,26px);padding:clamp(6px,1.1dvh,13px) clamp(16px,2vw,30px)}
+ .attractBar{width:min(1000px,88vw);height:clamp(5px,.8dvh,10px)}
+ .attractContent small{font-size:clamp(12px,1.9dvh,22px);line-height:1.15}
+ .gestureStartNotice{padding:clamp(6px,1dvh,12px) 15px}
+ .gestureStartIcon{font-size:clamp(32px,6dvh,70px)}
+ .gestureStartNotice strong{font-size:clamp(18px,3dvh,33px)}
+ .gestureStartNotice span:not(.gestureStartIcon){font-size:clamp(13px,2dvh,23px)}
+}
+@media (min-width:800px) and (orientation:landscape) and (max-height:560px){
+ .attractContent{height:98%}
+ .senaiWordmark{font-size:13dvh}
+ .attractContent h2{font-size:9dvh}
+ .attractHands{font-size:9dvh}
+ .attractStart{font-size:3.5dvh}
+ .attractButtons button{font-size:2dvh;padding:5px 12px}
+}
+
+/* A imagem enviada pelo usuário é a arte completa da abertura; os botões HTML
+   transparentes ficam sobre os botões desenhados na imagem. */
+.posterScreen{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;
+  background:#031426 url("abertura-jarvis.png") center center / 100% 100% no-repeat;
+  padding:0;display:none;z-index:100}
+.posterScreen.visible{display:block}
+.posterActions{position:absolute;left:28.5%;top:79.3%;width:43%;height:9%;display:flex;gap:2%;z-index:2}
+.posterActions button{display:block;flex:1;min-width:0;height:100%;border:0;border-radius:10px;
+  background:transparent!important;color:transparent!important;box-shadow:none!important;
+  font-size:0;cursor:pointer}
+.posterActions button:first-child{flex:1.45}
+.posterActions button:focus-visible{outline:4px solid #fff;outline-offset:2px}
+.posterActions button[hidden]{display:none!important}
+.posterActions button:hover{background:rgba(255,255,255,.13)!important}
+.posterCameraSetup{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(620px,90vw);max-height:85dvh;overflow:auto;z-index:5;
+  box-shadow:0 0 0 100vmax rgba(0,0,0,.72),0 12px 55px #000}
+.posterCameraSetup[hidden]{display:none!important}
+.musicButton{position:absolute;right:1.2vw;top:1.8vh;z-index:3;padding:9px 13px;
+  background:#061a2cdb;color:#d8f9ff;border:1px solid #22bde0;border-radius:12px;
+  font-size:clamp(11px,1.1vw,16px);font-weight:700;cursor:pointer}
+.musicStatus{position:absolute;right:1.2vw;top:8vh;z-index:3;max-width:300px;
+  font-size:12px;text-align:right;color:#d9f9ff;text-shadow:0 2px 5px #000}
+.srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-aspect-ratio:1/1){.posterScreen{background-size:100% 100%}.musicButton{top:1vh}}
+
+/* Correção: áreas clicáveis independentes, alinhadas à arte 1650x928.
+   Evita que o clique em INICIAR seja capturado por CONFIGURAR CÂMERA. */
+.posterActions{display:contents}
+.posterActions button{position:absolute!important;top:79.7%!important;height:8.8%!important;
+  z-index:4!important;flex:none!important;min-width:0!important;border-radius:12px!important;
+  padding:0!important;transform:none!important}
+#configureCameraButton{left:29.4%!important;width:23.5%!important;right:auto!important}
+#startGameButton{left:54.0%!important;width:17.2%!important;right:auto!important}
+.posterActions button:active{outline:3px solid #42dfbb!important;outline-offset:0}
+
+/* Arte atualizada: somente o botão CONFIGURAR CÂMERA, centralizado. */
+.posterActions{display:contents!important}
+#configureCameraButton{position:absolute!important;left:37.8%!important;top:79.9%!important;width:24.5%!important;height:8.7%!important;right:auto!important;z-index:4!important}
+
+/* Instrução visível no popup do vencedor, sem barras de rolagem */
+.restartGesture{display:flex;align-items:center;justify-content:center;gap:clamp(10px,2vw,24px);margin:clamp(8px,2vh,20px) auto;padding:clamp(10px,1.8vh,20px);border:2px solid #42dfbb;border-radius:18px;background:rgba(25,105,105,.25);max-width:780px}
+.restartGestureIcon{font-size:clamp(35px,7vh,78px);line-height:1;flex:none;animation:float 2s ease-in-out infinite}
+.restartGesture div{display:flex;flex-direction:column;gap:6px;text-align:left}
+.restartGesture strong{color:#5affd1;font-size:clamp(17px,3.4vh,37px);line-height:1.12}
+.restartGesture span:not(.restartGestureIcon){font-size:clamp(14px,2.3vh,23px);color:#fff}
+@media(max-width:550px){.restartGesture{gap:8px}.restartGesture strong{font-size:clamp(15px,2.7vh,22px)}.restartGestureIcon{font-size:clamp(30px,5vh,48px)}}
+
+/* Resultado final com hierarquia de leitura para TV, sem afetar a arena */
+.celebrationBox{width:min(1000px,96vw);display:flex;flex-direction:column;align-items:center;gap:clamp(5px,1vh,14px);padding:clamp(12px,2.3vh,30px)!important;border-width:3px;box-shadow:0 0 75px rgba(66,223,187,.25)}
+.winnerEyebrow{font-size:clamp(15px,2.4vh,28px);font-weight:900;letter-spacing:.12em;color:#d8f5ff}
+.celebrationIcon{font-size:clamp(48px,10vh,110px)!important;line-height:1}
+.celebration h2{font-size:clamp(30px,7.2vh,85px)!important;line-height:1.04;margin:0!important;text-shadow:0 0 28px rgba(66,223,187,.5);font-weight:1000}
+.winnerScore{width:min(800px,100%);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(8px,2vw,24px);padding:clamp(9px,1.5vh,18px) clamp(12px,2vw,25px);background:#061624;border:2px solid #66cfe1;border-radius:20px}
+.winnerPlayer{display:flex;flex-direction:column;gap:2px;align-items:center}
+.winnerPlayer span{font-size:clamp(15px,2.5vh,26px);font-weight:900;letter-spacing:.07em;color:#d9eefa}
+.winnerPlayer strong{font-size:clamp(46px,10vh,110px);line-height:1;color:white;font-variant-numeric:tabular-nums}
+.winnerSeparator{font-size:clamp(24px,5vh,54px);color:#7c9bac;font-weight:900}
+.celebration[data-winner="student"] .winnerPlayer:first-child strong,.celebration[data-winner="jarvis"] .winnerPlayer:last-child strong{color:#42dfbb;text-shadow:0 0 24px rgba(66,223,187,.5)}
+.celebration .restartGesture{margin:clamp(3px,.8vh,12px) auto;padding:clamp(8px,1.3vh,15px);width:min(800px,100%)}
+.celebration .restartGestureIcon{font-size:clamp(32px,6vh,65px)}
+.celebration .restartGesture strong{font-size:clamp(16px,2.8vh,30px)}
+.celebration .restartGesture span:not(.restartGestureIcon){font-size:clamp(13px,2vh,20px)}
+.celebration .hint{margin:0;font-size:clamp(12px,1.8vh,18px)!important}
+@media(max-height:650px){.celebrationBox{gap:3px}.celebrationIcon{font-size:42px!important}.celebration h2{font-size:clamp(26px,6vh,45px)!important}.winnerPlayer strong{font-size:clamp(35px,8vh,60px)}.winnerScore{padding:6px 12px}.restartGesture{padding:6px!important}}
+
+/* Fonte ampliada do resultado final para leitura em TV */
+.celebrationBox{width:min(1150px,97vw)}
+.celebration h2{font-size:clamp(42px,9.5vh,115px)!important;letter-spacing:.015em;text-align:center}
+.winnerScore{width:min(980px,100%)}
+.winnerPlayer span{font-size:clamp(19px,3.1vh,34px)}
+.winnerPlayer strong{font-size:clamp(70px,14vh,155px)}
+.winnerSeparator{font-size:clamp(34px,6vh,70px)}
+@media(max-height:650px){.celebration h2{font-size:clamp(32px,7vh,65px)!important}.winnerPlayer strong{font-size:clamp(50px,10vh,85px)}}
+@media(max-width:550px){.celebration h2{font-size:clamp(28px,7vw,54px)!important}.winnerPlayer strong{font-size:clamp(48px,13vw,80px)}}
+
+/* Resultado aprovado: visual limpo, placar horizontal e tipografia gigante.
+   Alterações restritas à tela de celebração; Arena 2.0 intacta. */
+.celebration{background:rgba(0,6,17,.91)}
+.celebrationBox{
+ width:min(1760px,98vw);max-height:96vh;overflow:hidden;
+ padding:clamp(14px,3vh,35px)!important;
+ gap:clamp(9px,2vh,24px);
+ background:linear-gradient(140deg,#06182e,#031124 65%,#071c32);
+ border:2px solid #00c9f4;border-radius:25px;
+ box-shadow:0 0 42px rgba(0,208,255,.25),inset 0 0 25px rgba(0,208,255,.07);
+}
+.celebrationIcon{font-size:clamp(42px,8vh,85px)!important}
+.celebration h2{
+ font-size:clamp(40px,7.6vw,105px)!important;
+ color:#31f5dd;letter-spacing:.015em;
+ text-shadow:0 0 20px rgba(0,255,235,.52);
+}
+.celebration .winnerScore{
+ display:flex;justify-content:center;align-items:baseline;
+ gap:clamp(8px,1.7vw,28px);width:100%;
+ padding:0;border:0;background:transparent;border-radius:0;
+ white-space:nowrap;
+}
+.celebration .winnerPlayer{display:flex;flex-direction:row;align-items:baseline;gap:clamp(7px,1vw,18px)}
+.celebration .winnerPlayer span{
+ font-size:clamp(18px,4.2vw,76px);font-weight:1000;
+ letter-spacing:-.035em;color:#fff;
+ text-shadow:0 0 15px rgba(140,220,255,.35);
+}
+.celebration .winnerPlayer strong{
+ font-size:clamp(48px,7.6vw,145px);font-weight:1000;
+ line-height:.95;color:#fff;text-shadow:0 0 16px rgba(255,255,255,.3)
+}
+.celebration .winnerSeparator{font-size:clamp(30px,5vw,88px);color:#8ceeff}
+.celebration[data-winner="student"] .winnerPlayer:first-child strong,
+.celebration[data-winner="jarvis"] .winnerPlayer:last-child strong{
+ color:#2af8df;text-shadow:0 0 25px rgba(0,255,235,.7)
+}
+.celebration .restartGesture{
+ display:flex;flex-direction:column;gap:clamp(5px,1vh,12px);
+ width:96%;max-width:none;margin:0 auto;
+ padding:clamp(10px,2vh,24px);
+ background:rgba(7,93,96,.45);border:2px solid #00f2e5;
+ border-radius:28px;
+}
+.celebration .restartGestureIcon{font-size:clamp(36px,6vh,74px)}
+.celebration .restartGesture div{align-items:center;text-align:center}
+.celebration .restartGesture strong{font-size:clamp(16px,2.6vw,43px);color:#58ffe0}
+.celebration .restartGesture span:not(.restartGestureIcon){font-size:clamp(14px,2vw,30px)}
+.celebration .hint{font-size:clamp(13px,1.8vw,25px)!important;color:#c4d6ed}
+@media(max-width:760px){
+ .celebration .winnerPlayer span{font-size:clamp(12px,3.5vw,26px)}
+ .celebration .winnerPlayer strong{font-size:clamp(32px,7vw,58px)}
+ .celebration .winnerSeparator{font-size:clamp(20px,4vw,38px)}
+ .celebration h2{font-size:clamp(26px,6vw,55px)!important}
+}
+@media(max-height:600px){
+ .celebrationBox{gap:5px;padding:8px!important}
+ .celebrationIcon{font-size:32px!important}
+ .celebration h2{font-size:clamp(24px,7vh,48px)!important}
+ .celebration .winnerPlayer strong{font-size:clamp(30px,10vh,65px)}
+ .celebration .restartGesture{padding:6px}
+ .celebration .restartGestureIcon{font-size:30px}
+}
+
+/* ARENA 2.0 — placar protagonista e painéis de jogo menores,
+   baseado na prévia aprovada. Não interfere na tela de abertura/vencedor. */
+.app{background:radial-gradient(ellipse at 50% 4%,rgba(0,92,155,.22),transparent 60%)}
+.scoreboard{
+ flex:0 0 auto;min-height:clamp(155px,31vh,290px);
+ grid-template-columns:minmax(0,1fr) minmax(0,2.1fr) minmax(0,1fr);
+ gap:clamp(8px,1.3vw,24px);
+ padding:clamp(10px,2vh,24px) clamp(12px,3vw,50px);
+ background:linear-gradient(135deg,#071c35,#082641 45%,#071c35);
+ border:2px solid #00bfff;border-radius:24px;
+ box-shadow:0 0 24px rgba(0,180,255,.28),inset 0 0 30px rgba(0,175,255,.09);
+}
+.scoreboard>div:first-child,.jarvisCompetitor{
+ display:flex;align-items:center;justify-content:center;gap:clamp(8px,1vw,20px);
+}
+.scoreboard>div:first-child{flex-direction:column}
+.scoreboard small{font-size:clamp(18px,2.3vw,38px);font-weight:1000;text-shadow:0 0 15px #1caeff77}
+.scoreboard strong{
+ font-size:clamp(70px,13vh,160px)!important;
+ color:#53fce0;line-height:.95;
+ text-shadow:0 0 22px rgba(0,255,213,.45);
+}
+.jarvisCompetitor>div{display:flex;flex-direction:column;align-items:center}
+.jarvisOrb{
+ width:clamp(68px,11vw,190px);height:clamp(80px,20vh,210px);
+ object-fit:contain;mix-blend-mode:screen;
+ filter:drop-shadow(0 0 12px rgba(255,157,0,.5));
+}
+.middle span{font-size:clamp(16px,2.5vh,28px);color:#65cbff;font-weight:750}
+#headline{font-size:clamp(27px,4.5vw,74px);line-height:1.1;text-shadow:0 0 18px #4cafff88}
+.middle p{font-size:clamp(15px,2.2vw,31px);color:#a4d9ff}
+.arena{
+ flex:0 1 auto;
+ height:clamp(210px,43vh,420px);
+ width:min(1220px,92%);
+ align-self:center;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+ gap:clamp(10px,2vw,40px);
+ overflow:visible;
+}
+.cameraPanel,.cpuPanel{
+ min-height:0;height:100%;border:2px solid #00a9e8;
+ border-radius:16px;background:#071a30;
+ box-shadow:0 0 20px rgba(0,145,245,.18);
+}
+.videoWrap{min-height:0;flex:1 1 0;height:auto}
+.versus{font-size:clamp(26px,4vw,54px);color:#55baff;text-shadow:0 0 18px #16adff}
+.cpuPanel{background:radial-gradient(circle,#082b4b,#06152b)}
+.bottom{margin-top:auto}
+@media(max-height:680px){
+ .scoreboard{min-height:clamp(105px,26vh,180px);padding:6px 14px}
+ .scoreboard strong{font-size:clamp(45px,10vh,100px)!important}
+ .scoreboard small{font-size:clamp(13px,2.6vh,23px)}
+ .jarvisOrb{height:clamp(55px,14vh,110px);width:clamp(55px,8vw,110px)}
+ #headline{font-size:clamp(23px,5vh,45px)}
+ .arena{height:clamp(160px,40vh,300px)}
+}
+@media(max-width:750px){
+ .scoreboard{grid-template-columns:1fr 2fr 1fr;gap:4px;padding:6px;min-height:120px}
+ .scoreboard strong{font-size:clamp(30px,8vh,70px)!important}
+ .scoreboard small{font-size:clamp(11px,2vw,17px)}
+ .jarvisOrb{display:none}
+ #headline{font-size:clamp(19px,4vw,35px)}
+ .middle p{font-size:clamp(11px,2.5vw,17px)}
+ .arena{width:100%;height:38vh;grid-template-columns:1fr 1fr;gap:8px}
+ .versus{display:none}
+}
+
+/* Arena 2.0 fiel ao anexo aprovado: somente elementos da arena.
+   Textos, placar, vídeo e gestos permanecem HTML dinâmico. */
+body{background:#020f20}
+.app{
+  max-width:none;width:100%;height:100dvh;
+  padding:clamp(6px,1.4vh,16px) clamp(10px,2.4vw,48px);
+  gap:clamp(5px,1.2vh,14px);
+  background:
+    linear-gradient(90deg,rgba(1,12,28,.25),rgba(1,14,32,.78) 22%,rgba(1,14,32,.78) 78%,rgba(1,12,28,.25)),
+    url('arena-circuitos.png') left bottom / 22vw 60vh no-repeat,
+    radial-gradient(ellipse at 50% 0%,#09264c 0%,#031429 54%,#010e20 100%);
+}
+.app>header{display:flex;justify-content:space-between;align-items:center;min-height:clamp(34px,6vh,65px)}
+.brand{font-size:clamp(22px,3vw,46px);color:#fff;text-shadow:0 0 10px #1266a0}
+.brand b{color:#40f8e0}
+.brand em{display:inline;font-size:.30em;letter-spacing:.22em;color:#9bdfff}
+.topActions{justify-content:flex-end;gap:clamp(4px,.6vw,12px)}
+button.utility,.cameraSelectLabel{background:#061d38;color:#e9faff;border:1px solid #007cc3;border-radius:10px;box-shadow:inset 0 0 12px #009cff22,0 0 10px #009cff20}
+#cameraSelect{background:#071b34;border-color:#126aa6}
+.scoreboard{
+  position:relative;isolation:isolate;flex:0 0 auto;
+  min-height:clamp(150px,32vh,340px);
+  grid-template-columns:minmax(0,1.05fr) minmax(0,2.2fr) minmax(0,1.05fr);
+  gap:clamp(5px,1.5vw,28px);padding:clamp(10px,2vh,25px) clamp(16px,3vw,55px);
+  border:3px solid #00c9ff;border-radius:20px;
+  background:linear-gradient(125deg,#04172e,#082449 49%,#04172e);
+  box-shadow:0 0 18px #00aeff88,inset 0 0 30px #006bb655,0 0 0 5px #03203b;
+  overflow:hidden;
+}
+.scoreboard:before{content:'';position:absolute;inset:8px;pointer-events:none;border:1px solid #078cc488;clip-path:polygon(0 0,25% 0,28% 14%,72% 14%,75% 0,100% 0,100% 100%,0 100%);z-index:-1}
+.scoreboard:after{content:'';position:absolute;bottom:0;left:30%;width:40%;height:5px;background:#00c8ff;box-shadow:0 0 16px #00bfff;pointer-events:none}
+.scoreboard>div:first-child{flex-direction:column;gap:clamp(3px,.5vh,8px)}
+.scoreboard small{font-size:clamp(18px,2.5vw,40px);font-weight:1000;letter-spacing:.015em;color:#fff;text-shadow:0 0 13px #88cfff55}
+.scoreboard strong{font-size:clamp(68px,15vh,165px)!important;line-height:1;color:#48f8dd;text-shadow:0 0 23px #28ffda66}
+.scoreboard .middle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(4px,1vh,12px);min-width:0}
+.middle span{font-size:clamp(16px,2.6vh,30px);color:#5bcfff;font-weight:850}
+#headline{font-size:clamp(29px,4.7vw,75px);line-height:1.08;margin:0;color:#fff;text-shadow:0 0 14px #409affcc;white-space:normal}
+.middle p{font-size:clamp(15px,2.3vw,29px);line-height:1.2;color:#7fd7ff}
+.jarvisCompetitor{gap:clamp(5px,1vw,20px);justify-content:center}
+.jarvisCompetitor>div{gap:4px}
+.jarvisOrb{width:clamp(85px,11vw,200px);height:clamp(90px,24vh,245px);object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 0 10px #ff990088)}
+.arena{
+  flex:0 1 auto;align-self:center;width:min(1250px,83vw);
+  height:clamp(210px,39vh,470px);min-height:0;
+  grid-template-columns:minmax(0,1fr) clamp(35px,5vw,90px) minmax(0,1fr);
+  gap:clamp(8px,1.5vw,26px);overflow:visible;
+}
+.cameraPanel,.cpuPanel{height:100%;min-height:0;border:2px solid #00a6e7;border-radius:11px;background:#04172d;box-shadow:0 0 12px #008be744}
+.panelTitle{background:#09223f;padding:clamp(6px,1vh,13px) clamp(10px,1vw,18px);font-size:clamp(13px,1.4vw,19px)}
+#gestureLabel{font-size:.75em;color:#49fce2}
+.videoWrap{flex:1;min-height:0;max-height:none;aspect-ratio:auto;background:#020e1d}
+.videoWrap video,.videoWrap canvas{object-fit:contain}
+.versus{font-size:clamp(28px,4vw,58px);color:#61c4ff;text-shadow:0 0 16px #00aaff}
+.cpuPanel{background:radial-gradient(circle,#0a3762 0%,#04152c 70%)}
+.hand{font-size:clamp(65px,15vh,165px);color:#fff;filter:drop-shadow(0 0 17px #4ebaff88)}
+#cpuChoice{font-size:clamp(13px,1.6vw,22px);padding-bottom:clamp(6px,2vh,18px)}
+.bottom{margin-top:auto;gap:clamp(3px,.8vh,9px)}
+#progressText{font-size:clamp(15px,2vh,23px)}
+.progressTrack{max-width:min(960px,80vw);height:clamp(6px,1vh,11px);background:#074473;box-shadow:0 0 10px #0073bd44}
+.roundDots{color:#00e8dc}
+#notice{color:#85c9ee}
+@media(max-height:680px) and (min-width:800px){
+  .scoreboard{min-height:clamp(135px,30vh,205px);padding:7px 22px}
+  .scoreboard strong{font-size:clamp(52px,13vh,95px)!important}
+  .scoreboard small{font-size:clamp(16px,2.8vh,24px)}
+  .jarvisOrb{height:clamp(65px,21vh,135px);width:clamp(65px,10vw,135px)}
+  #headline{font-size:clamp(24px,5vh,42px)}
+  .middle p{font-size:clamp(13px,2.8vh,20px)}
+  .arena{height:clamp(165px,38vh,300px)}
+}
+@media(max-width:799px){
+  .app{padding:5px;gap:5px}
+  .scoreboard{min-height:clamp(110px,26vh,190px);padding:8px;grid-template-columns:1fr 2fr 1fr;gap:3px}
+  .scoreboard small{font-size:clamp(11px,2.3vw,18px)}
+  .scoreboard strong{font-size:clamp(34px,9vh,75px)!important}
+  .jarvisOrb{display:none}
+  #headline{font-size:clamp(19px,4.2vw,36px)}
+  .middle span{font-size:clamp(11px,2.4vw,19px)}
+  .middle p{font-size:clamp(11px,2.2vw,18px)}
+  .arena{width:100%;height:38vh;grid-template-columns:1fr 1fr;gap:8px}
+  .versus{display:none}
+}
+
+/* Holograma PNG com transparência real, sem quadrado de fundo. */
+.jarvisOrb{
+ mix-blend-mode:normal;
+ background:transparent;
+ object-fit:contain;
+ filter:drop-shadow(0 0 12px rgba(255,157,0,.48));
+}
+
+/* Aviso de retorno automático: aparece somente nos últimos 10 segundos. */
+#notice.inactivityWarning{color:#ffe49a!important;font-weight:900!important;text-shadow:0 0 14px rgba(255,180,0,.6);animation:inactivityPulse 1.3s ease-in-out infinite}
+@keyframes inactivityPulse{50%{opacity:.7}}
